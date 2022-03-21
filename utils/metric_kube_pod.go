@@ -5,61 +5,101 @@ import (
 	"reflect"
 )
 
+var GLOBALNAME = "kube_pod_"
+
 type Metric interface {
 	Group(kubePodContainer *Metric, kubePodInitContainer *Metric, metricLine MetricLine)
+	UpdateContainer(fieldName string)
 }
 
 type PodMetric struct {
-	Namespace              string                 `json:"namespace" group:"Namespace"`
-	Pod                    string                 `json:"pod" group:"Pod"`
-	KubePodInfo            map[string]interface{} `json:"kube_pod_info" get_attr:"true" get_value:"false"`
-	KubePodCreated         float64                `json:"kube_pod_created" get_attr:"false" get_value:"true"`
-	KubePodStartTime       float64                `json:"kube_pod_start_time" get_attr:"false" get_value:"true"`
-	KubePodCompletionTime  float64                `json:"kube_pod_completion_time" get_attr:"false" get_value:"true"`
-	KubePodRestartPolicy   map[string]interface{} `json:"kube_pod_restart_policy" get_attr:"true" get_value:"false"`
-	KubePodOwner           map[string]interface{} `json:"kube_pod_owner" get_attr:"true" get_value:"false"`
-	KubePodLabel           map[string]string      `json:"kube_pod_label" get_attr:"true" get_value:"false"`
-	KubePodStatusPhase     map[string]interface{} `json:"kube_pod_status_phase" get_attr:"true" get_value:"false"`
-	KubePodStatusReady     map[string]interface{} `json:"kube_pod_status_ready" get_attr:"true" get_value:"false"`
-	KubePodStatusScheduled map[string]interface{} `json:"kube_pod_status_scheduled" get_attr:"true" get_value:"false"`
-	KubePodContainers      map[string]Metric      `json:"kube_pod_containers" get_attr:"true" get_value:"false"`
-	KubePodInitContainers  map[string]Metric      `json:"kube_pod_init_containers" get_attr:"true" get_value:"false"`
+	Namespace                string                 `json:"namespace" group:"Namespace"`
+	Pod                      string                 `json:"pod" group:"Pod"`
+	KubePodInfo              map[string]interface{} `json:"info" get_attr:"true" get_value:"false"`
+	KubePodCreated           float64                `json:"created" get_attr:"false" get_value:"true"`
+	KubePodStartTime         float64                `json:"start_time" get_attr:"false" get_value:"true"`
+	KubePodCompletionTime    float64                `json:"completion_time" get_attr:"false" get_value:"true"`
+	KubePodRestartPolicy     map[string]interface{} `json:"restart_policy" get_attr:"true" get_value:"false"`
+	KubePodOwner             map[string]interface{} `json:"owner" get_attr:"true" get_value:"false"`
+	KubePodLabel             map[string]string      `json:"label" get_attr:"true" get_value:"false"`
+	KubePodStatusPhase       map[string]interface{} `json:"status_phase" get_attr:"true" get_value:"false"`
+	KubePodStatusReady       map[string]interface{} `json:"status_ready" get_attr:"true" get_value:"false"`
+	KubePodStatusScheduled   map[string]interface{} `json:"status_scheduled" get_attr:"true" get_value:"false"`
+	KubePodContainers        map[string]Metric      `json:"containers" get_attr:"true" get_value:"false"`
+	KubePodInitContainers    map[string]Metric      `json:"init_containers" get_attr:"true" get_value:"false"`
+	KubePodContainerInfo     []Metric               `json:"container"`
+	KubePodInitContainerInfo []Metric               `json:"init_container"`
 }
 
 type KubePodContainer struct {
 	Namespace                                  string                 `json:"namespace" group:"Namespace"`
 	Pod                                        string                 `json:"pod" group:"Pod"`
 	Container                                  string                 `json:"container" group:"Container"`
-	KubePodContainerInfo                       map[string]interface{} `json:"kube_pod_container_info" get_attr:"true" get_value:"false"`
-	KubePodContainerStatusWaiting              bool                   `json:"kube_pod_container_status_waiting" get_attr:"false" get_value:"true"`
-	KubePodContainerStatusWaitingReason        map[string]interface{} `json:"kube_pod_container_status_waiting_reason" get_attr:"true" get_value:"false"`
-	KubePodContainerStatusRunning              bool                   `json:"kube_pod_container_status_running" get_attr:"false" get_value:"true"`
-	KubePodContainerStateStarted               float64                `json:"kube_pod_container_state_started" get_attr:"false" get_value:"true"`
-	KubePodContainerStatusTerminated           bool                   `json:"kube_pod_container_status_terminated" get_attr:"false" get_value:"true"`
-	KubePodContainerStatusTerminatedReason     map[string]interface{} `json:"kube_pod_container_status_terminated_reason" get_attr:"true" get_value:"false"`
-	KubePodContainerStatusLastTerminatedReason map[string]interface{} `json:"kube_pod_container_status_last_terminated_reason" get_attr:"true" get_value:"false"`
-	KubePodContainerStatusReady                bool                   `json:"kube_pod_container_status_ready" get_attr:"false" get_value:"true"`
-	KubePodContainerStatusRestartTotal         int                    `json:"kube_pod_container_status_restarts_total" get_attr:"false" get_value:"true"`
-	//KubePodContainerResourceRequests           []map[string]interface{} `json:"kube_pod_container_resource_requests" get_attr:"true" get_value:"true"`
-	//KubePodContainerResourceLimits             []map[string]interface{} `json:"kube_pod_container_resource_limits" get_attr:"true" get_value:"true"`
+	KubePodContainerInfo                       map[string]interface{} `json:"container_info" get_attr:"true" get_value:"false"`
+	KubePodContainerStatusWaiting              bool                   `json:"container_status_waiting" get_attr:"false" get_value:"true"`
+	KubePodContainerStatusWaitingReason        map[string]interface{} `json:"container_status_waiting_reason" get_attr:"true" get_value:"false"`
+	KubePodContainerStatusRunning              bool                   `json:"container_status_running" get_attr:"false" get_value:"true"`
+	KubePodContainerStateStarted               float64                `json:"container_state_started" get_attr:"false" get_value:"true"`
+	KubePodContainerStatusTerminated           bool                   `json:"container_status_terminated" get_attr:"false" get_value:"true"`
+	KubePodContainerStatusTerminatedReason     map[string]interface{} `json:"container_status_terminated_reason" get_attr:"true" get_value:"false"`
+	KubePodContainerStatusLastTerminatedReason map[string]interface{} `json:"container_status_last_terminated_reason" get_attr:"true" get_value:"false"`
+	KubePodContainerStatusReady                bool                   `json:"container_status_ready" get_attr:"false" get_value:"true"`
+	KubePodContainerStatusRestartTotal         int                    `json:"container_status_restarts_total" get_attr:"false" get_value:"true"`
+	//KubePodContainerResourceRequests           []map[string]interface{} `json:"container_resource_requests" get_attr:"true" get_value:"true"`
+	//KubePodContainerResourceLimits             []map[string]interface{} `json:"container_resource_limits" get_attr:"true" get_value:"true"`
 }
 
 type KubePodInitContainer struct {
 	Pod                                            string                 `json:"pod" group:"Pod"`
 	Namespace                                      string                 `json:"namespace" group:"Namespace"`
 	Container                                      string                 `json:"container" group:"Container"`
-	KubePodInitContainerInfo                       map[string]interface{} `json:"kube_pod_init_container_info"  get_attr:"true" get_value:"false"`
-	KubePodInitContainerStatusWaiting              bool                   `json:"kube_pod_init_container_status_waiting"  get_attr:"false" get_value:"true"`
-	KubePodInitContainerStatusWaitingReason        map[string]interface{} `json:"kube_pod_init_container_status_waiting_reason"  get_attr:"true" get_value:"false"`
-	KubePodInitContainerStatusRunning              bool                   `json:"kube_pod_init_container_status_running" get_attr:"false" get_value:"true"`
-	KubePodInitContainerStatusTerminated           bool                   `json:"kube_pod_init_container_status_terminated"  get_attr:"false" get_value:"true"`
-	KubePodInitContainerStatusTerminatedReason     map[string]interface{} `json:"kube_pod_init_container_status_terminated_reason"  get_attr:"true" get_value:"false"`
-	KubePodInitContainerStatusLastTerminatedReason map[string]interface{} `json:"kube_pod_init_container_status_last_terminated_reason"  get_attr:"true" get_value:"false"`
-	KubePodInitContainerStatusReady                bool                   `json:"kube_pod_init_container_status_ready"  get_attr:"false" get_value:"true"`
-	KubePodInitContainerStatusRestartsTotal        int                    `json:"kube_pod_init_container_status_restarts_total" get_attr:"false" get_value:"true"`
-	//KubePodInitContainerResourceRequests           []map[string]interface{} `json:"kube_pod_init_container_resource_requests" get_attr:"true" get_value:"false"`
-	//KubePodInitContainerResourceLimits             []map[string]interface{} `json:"kube_pod_init_container_resource_limits" get_attr:"true" get_value:"false"`
+	KubePodInitContainerInfo                       map[string]interface{} `json:"init_container_info"  get_attr:"true" get_value:"false"`
+	KubePodInitContainerStatusWaiting              bool                   `json:"init_container_status_waiting"  get_attr:"false" get_value:"true"`
+	KubePodInitContainerStatusWaitingReason        map[string]interface{} `json:"init_container_status_waiting_reason"  get_attr:"true" get_value:"false"`
+	KubePodInitContainerStatusRunning              bool                   `json:"init_container_status_running" get_attr:"false" get_value:"true"`
+	KubePodInitContainerStatusTerminated           bool                   `json:"init_container_status_terminated"  get_attr:"false" get_value:"true"`
+	KubePodInitContainerStatusTerminatedReason     map[string]interface{} `json:"init_container_status_terminated_reason"  get_attr:"true" get_value:"false"`
+	KubePodInitContainerStatusLastTerminatedReason map[string]interface{} `json:"init_container_status_last_terminated_reason"  get_attr:"true" get_value:"false"`
+	KubePodInitContainerStatusReady                bool                   `json:"init_container_status_ready"  get_attr:"false" get_value:"true"`
+	KubePodInitContainerStatusRestartsTotal        int                    `json:"init_container_status_restarts_total" get_attr:"false" get_value:"true"`
+	//KubePodInitContainerResourceRequests           []map[string]interface{} `json:"init_container_resource_requests" get_attr:"true" get_value:"false"`
+	//KubePodInitContainerResourceLimits             []map[string]interface{} `json:"init_container_resource_limits" get_attr:"true" get_value:"false"`
 }
+
+func (m *PodMetric) UpdateContainer(fieldName string) {
+	st := reflect.TypeOf(*m)
+	sv := reflect.ValueOf(m).Elem()
+	var containerList []Metric
+	for i := 0; i < st.NumField(); i++ {
+		field := st.Field(i)
+		if field.Name == fieldName {
+			t, ok := sv.FieldByName(fieldName).Interface().(map[string]Metric)
+			if ok {
+				for _, value := range t {
+					containerList = append(containerList, value)
+				}
+			}
+		}
+	}
+	if len(containerList) > 0 {
+		if fieldName == "KubePodContainers" {
+			fmt.Printf("%T,%v", containerList, containerList)
+			sv.FieldByName("KubePodContainerInfo").Set(reflect.ValueOf(containerList))
+			zeroMapMetric := map[string]Metric{}
+			sv.FieldByName("KubePodContainers").Set(reflect.ValueOf(&zeroMapMetric).Elem())
+
+		} else if fieldName == "KubePodInitContainers" {
+			sv.FieldByName("KubePodInitContainerInfo").Set(reflect.ValueOf(containerList))
+			zeroMapMetric := map[string]Metric{}
+			sv.FieldByName("KubePodInitContainers").Set(reflect.ValueOf(&zeroMapMetric).Elem())
+
+		}
+	}
+
+}
+
+func (m KubePodInitContainer) UpdateContainer(fieldName string) {}
+func (m KubePodContainer) UpdateContainer(fieldName string)     {}
 
 func (m *PodMetric) Group(kubePodContainer *Metric, kubePodInitContainer *Metric, metricLine MetricLine) {
 	var valueFalse interface{} = "0"
@@ -74,12 +114,13 @@ func (m *PodMetric) Group(kubePodContainer *Metric, kubePodInitContainer *Metric
 	}
 
 	for i := 0; i < st.NumField(); i++ {
-		//fmt.Println(st.Field(i).Tag) //将tag输出出来
 		field := st.Field(i)
-		jsonTag := field.Tag.Get("json")
+		jsonTag := GLOBALNAME + field.Tag.Get("json")
 		getAttr := field.Tag.Get("get_attr")
 		getValue := field.Tag.Get("get_value")
 		if jsonTag == "kube_pod_containers" && Distribution(metricLine, *kubePodContainer) {
+			// 当jsonTag为"kube_pod_containers"并且kubePodContainer对象属性中包含metricLine.type时
+			// 获取并更新KubePodContainers[groupField]的内容
 			groupField := GetGroupFields(kubePodContainer, metricLine)
 			kubePodContainerValue, ok := m.KubePodContainers[groupField]
 			if !ok {
@@ -88,8 +129,9 @@ func (m *PodMetric) Group(kubePodContainer *Metric, kubePodInitContainer *Metric
 			kubePodContainerValue.Group(kubePodContainer, kubePodInitContainer, metricLine)
 			m.KubePodContainers[groupField] = kubePodContainerValue
 		} else if jsonTag == "kube_pod_init_containers" && Distribution(metricLine, *kubePodInitContainer) {
+			// 同上
 			groupField := GetGroupFields(kubePodInitContainer, metricLine)
-			kubePodInitContainerValue, ok := m.KubePodContainers[groupField]
+			kubePodInitContainerValue, ok := m.KubePodInitContainers[groupField]
 			if !ok {
 				kubePodInitContainerValue = *kubePodInitContainer
 			}
@@ -97,10 +139,16 @@ func (m *PodMetric) Group(kubePodContainer *Metric, kubePodInitContainer *Metric
 			m.KubePodInitContainers[groupField] = kubePodInitContainerValue
 
 		} else if jsonTag == metricLine.Type && metricLine.Value != valueFalse {
+			// 处理其它类型的对象；
+			//metricLine.Value != valueFalse，这里有个特殊处理，当metricLine.value等于0时将舍弃此行；算是一个坑
+
 			if getAttr == "true" {
+				// 当getAttr为true时，将metricLine.Attribute直接赋给m对象
+				// 另外一个坑，这里getAttr和getValue不能同时为true；因为字段名只有一个；
 				metricAttr := reflect.ValueOf(&metricLine.Attribute).Elem()
 				sv.Field(i).Set(metricAttr)
 			} else if getValue == "true" {
+				// 当getValue为true时，将针对原定义的字段类型来转换metricLine.value；
 				// 根据struct原定义的类型进行类型转换
 				value, ok := metricLine.Value.(string)
 				if !ok {
@@ -151,7 +199,7 @@ func (m *KubePodInitContainer) Group(kubePodContainer *Metric, kubePodInitContai
 	for i := 0; i < st.NumField(); i++ {
 		//fmt.Println(st.Field(i).Tag) //将tag输出出来
 		field := st.Field(i)
-		jsonTag := field.Tag.Get("json")
+		jsonTag := GLOBALNAME + field.Tag.Get("json")
 		getAttr := field.Tag.Get("get_attr")
 		getValue := field.Tag.Get("get_value")
 
@@ -218,7 +266,7 @@ func (m *KubePodContainer) Group(kubePodContainer *Metric, kubePodInitContainer 
 	for i := 0; i < st.NumField(); i++ {
 		//fmt.Println(st.Field(i).Tag) //将tag输出出来
 		field := st.Field(i)
-		jsonTag := field.Tag.Get("json")
+		jsonTag := GLOBALNAME + field.Tag.Get("json")
 		getAttr := field.Tag.Get("get_attr")
 		getValue := field.Tag.Get("get_value")
 		if jsonTag == metricLine.Type && metricLine.Value != valueFalse {
