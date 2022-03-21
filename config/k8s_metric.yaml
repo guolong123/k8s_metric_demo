@@ -1,0 +1,64 @@
+PodMetric:
+  metch_label:
+    - pod
+    - namespace
+  kube_pod_info:
+    method: get_label
+    label:
+      - host_ip
+      - pod_ip
+      - node
+      - created_by_kind
+      - created_by_name
+      - uid
+      - priority_class
+      - host_network
+  kube_pod_start_time:
+    method: get_value
+  kube_pod_completion_time:
+    method: get_value
+  kube_pod_owner:
+    method: get_label
+    label:
+      - owner_kind
+      - owner_name
+      - owner_is_controller
+      - uid
+  kube_pod_labels:
+    method: get_label
+    label:
+      - label_*
+
+  kube_pod_status_phase:
+    method: get_label
+    label:
+      - phase
+  kube_pod_status_ready:
+    method: get_label
+    label:
+      - condition
+  kube_pod_status_scheduled:
+    method: get_label
+    label:
+      - condition
+
+ContainerMetric:
+  metch_label:
+    - pod
+    - namespace
+    - container
+  kube_pod_container_info:
+    method: get_label
+    label:
+      - container
+      - image
+      - image_id
+      - image_spec
+      - container_id
+  kube_pod_container_status_waiting:
+    - container
+    -
+
+
+
+
