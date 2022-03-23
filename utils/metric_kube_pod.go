@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 var GLOBALNAME = "kube_pod_"
@@ -112,12 +113,16 @@ func (m *PodMetric) Group(kubePodContainer *Metric, kubePodInitContainer *Metric
 	if m.KubePodContainers == nil {
 		m.KubePodContainers = make(map[string]Metric)
 	}
-
+	var groupFields []string
 	for i := 0; i < st.NumField(); i++ {
 		field := st.Field(i)
 		jsonTag := GLOBALNAME + field.Tag.Get("json")
 		getAttr := field.Tag.Get("get_attr")
 		getValue := field.Tag.Get("get_value")
+		groupTag := field.Tag.Get("group")
+		if groupTag != "" {
+			groupFields = append(groupFields, groupTag)
+		}
 		if jsonTag == "kube_pod_containers" && Distribution(metricLine, *kubePodContainer) {
 			// 当jsonTag为"kube_pod_containers"并且kubePodContainer对象属性中包含metricLine.type时
 			// 获取并更新KubePodContainers[groupField]的内容
@@ -145,7 +150,19 @@ func (m *PodMetric) Group(kubePodContainer *Metric, kubePodInitContainer *Metric
 			if getAttr == "true" {
 				// 当getAttr为true时，将metricLine.Attribute直接赋给m对象
 				// 另外一个坑，这里getAttr和getValue不能同时为true；因为字段名只有一个；
-				metricAttr := reflect.ValueOf(&metricLine.Attribute).Elem()
+				attrs := map[string]interface{}{}
+				for k, v := range metricLine.Attribute {
+					t := 0
+					for _, g := range groupFields {
+						if strings.ToUpper(g) == strings.ToUpper(k) {
+							t++
+						}
+					}
+					if t == 0 {
+						attrs[k] = v
+					}
+				}
+				metricAttr := reflect.ValueOf(&attrs).Elem()
 				sv.Field(i).Set(metricAttr)
 			} else if getValue == "true" {
 				// 当getValue为true时，将针对原定义的字段类型来转换metricLine.value；
@@ -195,14 +212,17 @@ func (m *KubePodInitContainer) Group(kubePodContainer *Metric, kubePodInitContai
 	st := reflect.TypeOf(*m)
 
 	sv := reflect.ValueOf(m).Elem()
-
+	var groupFields []string
 	for i := 0; i < st.NumField(); i++ {
 		//fmt.Println(st.Field(i).Tag) //将tag输出出来
 		field := st.Field(i)
 		jsonTag := GLOBALNAME + field.Tag.Get("json")
 		getAttr := field.Tag.Get("get_attr")
 		getValue := field.Tag.Get("get_value")
-
+		groupTag := field.Tag.Get("group")
+		if groupTag != "" {
+			groupFields = append(groupFields, groupTag)
+		}
 		if jsonTag == metricLine.Type && metricLine.Value != valueFalse {
 			if getAttr == "true" {
 
@@ -211,7 +231,19 @@ func (m *KubePodInitContainer) Group(kubePodContainer *Metric, kubePodInitContai
 				//	fmt.Println(typeName)
 				//	//m.KubePodInitContainerResourceLimits = append(m.KubePodInitContainerResourceLimits, )
 				//}
-				metricAttr := reflect.ValueOf(&metricLine.Attribute).Elem()
+				attrs := map[string]interface{}{}
+				for k, v := range metricLine.Attribute {
+					t := 0
+					for _, g := range groupFields {
+						if strings.ToUpper(g) == strings.ToUpper(k) {
+							t++
+						}
+					}
+					if t == 0 {
+						attrs[k] = v
+					}
+				}
+				metricAttr := reflect.ValueOf(&attrs).Elem()
 				sv.Field(i).Set(metricAttr)
 			} else if getValue == "true" {
 				// 根据struct原定义的类型进行类型转换
@@ -263,10 +295,16 @@ func (m *KubePodContainer) Group(kubePodContainer *Metric, kubePodInitContainer 
 
 	sv := reflect.ValueOf(m).Elem()
 
+	var groupFields []string
+
 	for i := 0; i < st.NumField(); i++ {
 		//fmt.Println(st.Field(i).Tag) //将tag输出出来
 		field := st.Field(i)
 		jsonTag := GLOBALNAME + field.Tag.Get("json")
+		groupTag := field.Tag.Get("group")
+		if groupTag != "" {
+			groupFields = append(groupFields, groupTag)
+		}
 		getAttr := field.Tag.Get("get_attr")
 		getValue := field.Tag.Get("get_value")
 		if jsonTag == metricLine.Type && metricLine.Value != valueFalse {
@@ -276,7 +314,19 @@ func (m *KubePodContainer) Group(kubePodContainer *Metric, kubePodInitContainer 
 				//	fmt.Println(typeName)
 				//	//m.KubePodInitContainerResourceLimits = append(m.KubePodInitContainerResourceLimits, )
 				//}
-				metricAttr := reflect.ValueOf(&metricLine.Attribute).Elem()
+				attrs := map[string]interface{}{}
+				for k, v := range metricLine.Attribute {
+					t := 0
+					for _, g := range groupFields {
+						if strings.ToUpper(g) == strings.ToUpper(k) {
+							t++
+						}
+					}
+					if t == 0 {
+						attrs[k] = v
+					}
+				}
+				metricAttr := reflect.ValueOf(&attrs).Elem()
 				sv.Field(i).Set(metricAttr)
 			} else if getValue == "true" {
 				// 根据struct原定义的类型进行类型转换

@@ -23,7 +23,6 @@ func uploadToPandora(jsonData string) {
 			uploadToPandora(jsonData)
 		}
 	}()
-	fmt.Println(jsonData)
 	token := "eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eJwVy0sOgyAQANC7zBoaPjPUsvIqjEBCY9GqNE2Mdy_dv3dC-q7gtSOHD2UUCXgeBTw4ooBkkiTFWqKdouQhosRkORmKOdsMAirn_8b7QH1rAXvjvtdQ47KF8V1qabdpeXX6KdvRwgw-h3lP1w_XdyNd.13uwdKHaXXduQi2FhuHnb-FZxtOBKsqCG_bPbDDA4wzFHPxaYsFfoTI7Q5ZdP2RnKhdPAgtydFokG6DL4vxasA"
 	client := &http.Client{}
 
@@ -32,8 +31,6 @@ func uploadToPandora(jsonData string) {
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
-
-	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
