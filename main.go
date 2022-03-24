@@ -3,16 +3,22 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"k8s_metric/utils"
+	"k8s_metric/utils2"
+	_ "k8s_metric/utils2/kube_pod"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func main() {
-	err := utils.ReadFromUrl("http://10.202.185.50:8080/metrics", uploadToPandora)
+	startTime := time.Now().Unix()
+	err := utils2.ReadFromUrl("http://10.202.185.50:8080/metrics", uploadToPandora)
 	if err != nil {
 		return
 	}
+	endTime := time.Now().Unix()
+	dustion := endTime - startTime
+	fmt.Printf("总共耗时：%d", dustion)
 }
 
 func uploadToPandora(jsonData string) {
@@ -26,7 +32,7 @@ func uploadToPandora(jsonData string) {
 	token := "eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eJwVy0sOgyAQANC7zBoaPjPUsvIqjEBCY9GqNE2Mdy_dv3dC-q7gtSOHD2UUCXgeBTw4ooBkkiTFWqKdouQhosRkORmKOdsMAirn_8b7QH1rAXvjvtdQ47KF8V1qabdpeXX6KdvRwgw-h3lP1w_XdyNd.13uwdKHaXXduQi2FhuHnb-FZxtOBKsqCG_bPbDDA4wzFHPxaYsFfoTI7Q5ZdP2RnKhdPAgtydFokG6DL4vxasA"
 	client := &http.Client{}
 
-	req, err := http.NewRequest("POST", "http://pandora-web-svc.pandora-jks-guolong.qa.qiniu.io/api/v1/data?repo=k8s_metrics&sourcetype=json", strings.NewReader(jsonData))
+	req, err := http.NewRequest("POST", "http://pandora-web-svc.pandora-jks-guolong.qa.qiniu.io/api/v1/data?repo=k8s_metrics2&sourcetype=json", strings.NewReader(jsonData))
 	req.Header.Set("Authorization", token)
 	req.Header.Set("Content-Type", "application/json")
 
