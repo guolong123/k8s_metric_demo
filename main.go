@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"k8s_metric/utils2"
 	_ "k8s_metric/utils2/kube_configmap"
+	_ "k8s_metric/utils2/kube_daemonset"
 	_ "k8s_metric/utils2/kube_pod"
 	"net/http"
 	"strings"
