@@ -146,7 +146,7 @@ func (m *PodMetric) GetPodRestartPolicy(line utils2.MetricLine, groupFields stri
 
 func (m *PodMetric) GetTimeField(line utils2.MetricLine, groupFields string) {
 	timeFields := []interface{}{"kube_pod_start_time", "kube_pod_created", "kube_pod_completion_time"}
-	if !in(line.Type, timeFields) {
+	if !utils2.In(line.Type, timeFields) {
 		return
 	}
 	pod := m.Pods[groupFields]
@@ -210,7 +210,7 @@ func (m *PodMetric) getPodLabel(line utils2.MetricLine, groupFields string) {
 }
 
 func (m *PodMetric) getPodStatus(line utils2.MetricLine, groupFields string) {
-	if !in(line.Type, []interface{}{"kube_pod_status_scheduled", "kube_pod_status_ready", "kube_pod_status_phase"}) {
+	if !utils2.In(line.Type, []interface{}{"kube_pod_status_scheduled", "kube_pod_status_ready", "kube_pod_status_phase"}) {
 		return
 	}
 	pod := m.Pods[groupFields]
@@ -257,24 +257,4 @@ func (m *PodMetric) Sender(todoFunc func(jsonData string)) {
 		total -= 500
 	}
 
-}
-
-func eNum2float64(enum interface{}) float64 {
-	var newNum float64
-	value := enum.(string)
-
-	_, err := fmt.Sscanf(value, "%e", &newNum)
-	if err != nil {
-		fmt.Printf("%v not convert to int", enum)
-	}
-	return newNum
-}
-
-func in(obj interface{}, objList []interface{}) bool {
-	for _, v := range objList {
-		if obj == v {
-			return true
-		}
-	}
-	return false
 }

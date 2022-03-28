@@ -22,7 +22,7 @@ type PodInitContainer struct {
 }
 
 func (m *PodMetric) GetInitContainer(line utils2.MetricLine, groupFields string) {
-	if !in(line.Type, []interface{}{
+	if !utils2.In(line.Type, []interface{}{
 		"kube_pod_init_container_info",
 		"kube_pod_init_container_status_waiting",
 		"kube_pod_init_container_status_waiting_reason",
@@ -76,21 +76,21 @@ func (m *PodMetric) GetInitContainer(line utils2.MetricLine, groupFields string)
 }
 
 func (c *PodInitContainer) GetInitContainerInfo(line utils2.MetricLine) {
-	if !in(line.Type, []interface{}{"kube_pod_init_container_info"}) {
+	if !utils2.In(line.Type, []interface{}{"kube_pod_init_container_info"}) {
 		return
 	}
 	if c.KubePodInitContainerInfo == nil {
 		c.KubePodInitContainerInfo = make(map[string]string)
 	}
 	for key, value := range line.Attribute {
-		if in(key, []interface{}{"image", "image_id", "container_id"}) {
+		if utils2.In(key, []interface{}{"image", "image_id", "container_id"}) {
 			c.KubePodInitContainerInfo[key] = value
 		}
 	}
 }
 
 func (c *PodInitContainer) GetInitContainerStatus(line utils2.MetricLine) {
-	if !in(line.Type, []interface{}{
+	if !utils2.In(line.Type, []interface{}{
 		"kube_pod_init_container_status_waiting",
 		"kube_pod_init_container_status_running",
 		"kube_pod_init_container_status_terminated",
@@ -127,7 +127,7 @@ func (c *PodInitContainer) GetInitContainerStatus(line utils2.MetricLine) {
 }
 
 func (c *PodInitContainer) GetInitContainerStatusReason(line utils2.MetricLine) {
-	if !in(line.Type, []interface{}{
+	if !utils2.In(line.Type, []interface{}{
 		"kube_pod_init_container_status_waiting_reason",
 		"kube_pod_init_container_status_terminated_reason",
 		"kube_pod_init_container_status_last_terminated_reason"}) {
@@ -152,7 +152,7 @@ func (c *PodInitContainer) GetInitContainerStatusReason(line utils2.MetricLine) 
 }
 
 func (c *PodInitContainer) GetInitContainerRestartCount(line utils2.MetricLine) {
-	if !in(line.Type, []interface{}{"kube_pod_container_status_restarts_total"}) {
+	if !utils2.In(line.Type, []interface{}{"kube_pod_container_status_restarts_total"}) {
 		return
 	}
 	value := line.Value.(string)
@@ -163,7 +163,7 @@ func (c *PodInitContainer) GetInitContainerRestartCount(line utils2.MetricLine) 
 }
 
 func (c *PodInitContainer) GetInitContainerResource(line utils2.MetricLine) {
-	if !in(line.Type, []interface{}{"kube_pod_init_container_resource_requests", "kube_pod_init_container_resource_limits"}) {
+	if !utils2.In(line.Type, []interface{}{"kube_pod_init_container_resource_requests", "kube_pod_init_container_resource_limits"}) {
 		return
 	}
 	if c.KubePodInitContainerResourceLimits == nil {
@@ -179,7 +179,7 @@ func (c *PodInitContainer) GetInitContainerResource(line utils2.MetricLine) {
 
 			if k == "resource" {
 				if v == "memory" {
-					number := eNum2float64(line.Value)
+					number := utils2.ENum2float64(line.Value)
 					c.KubePodInitContainerResourceRequests[v] = fmt.Sprintf("%.2f (%s)", number, line.Attribute["unit"])
 				} else if v == "cpu" {
 					value := line.Value.(string)
@@ -191,7 +191,7 @@ func (c *PodInitContainer) GetInitContainerResource(line utils2.MetricLine) {
 		for k, v := range line.Attribute {
 			if k == "resource" {
 				if v == "memory" {
-					number := eNum2float64(line.Value)
+					number := utils2.ENum2float64(line.Value)
 					c.KubePodInitContainerResourceLimits[v] = fmt.Sprintf("%.2f (%s)", number, line.Attribute["unit"])
 				} else if v == "cpu" {
 					value := line.Value.(string)
