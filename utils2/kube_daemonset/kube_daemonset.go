@@ -36,7 +36,6 @@ func (m *DaemonSetMetrics) Group() {
 		m.DaemonSets = make(map[string]DaemonSet)
 	}
 	for _, line := range m.lines {
-		fmt.Println(line)
 		var groupFieldList []string
 		for _, v := range m.groupField {
 			groupField, ok := line.Attribute[v]

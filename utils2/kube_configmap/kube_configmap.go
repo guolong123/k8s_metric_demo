@@ -29,7 +29,6 @@ func (m *ConfigMapMetrics) Group() {
 		m.ConfigMaps = make(map[string]ConfigMap)
 	}
 	for _, line := range m.lines {
-		fmt.Println(line)
 		var groupFieldList []string
 		for _, v := range m.groupField {
 			groupField, ok := line.Attribute[v]

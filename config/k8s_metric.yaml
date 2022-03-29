@@ -1,64 +1,6 @@
-PodMetric:
-  metch_label:
-    - pod
-    - namespace
-  kube_pod_info:
-    method: get_label
-    label:
-      - host_ip
-      - pod_ip
-      - node
-      - created_by_kind
-      - created_by_name
-      - uid
-      - priority_class
-      - host_network
-  kube_pod_start_time:
-    method: get_value
-  kube_pod_completion_time:
-    method: get_value
-  kube_pod_owner:
-    method: get_label
-    label:
-      - owner_kind
-      - owner_name
-      - owner_is_controller
-      - uid
-  kube_pod_labels:
-    method: get_label
-    label:
-      - label_*
-
-  kube_pod_status_phase:
-    method: get_label
-    label:
-      - phase
-  kube_pod_status_ready:
-    method: get_label
-    label:
-      - condition
-  kube_pod_status_scheduled:
-    method: get_label
-    label:
-      - condition
-
-ContainerMetric:
-  metch_label:
-    - pod
-    - namespace
-    - container
-  kube_pod_container_info:
-    method: get_label
-    label:
-      - container
-      - image
-      - image_id
-      - image_spec
-      - container_id
-  kube_pod_container_status_waiting:
-    - container
-    -
+Pandora:
+  url: "http://pandora-web-svc.pandora-jks-guolong.qa.qiniu.io/api/v1/data?repo=k8s_metrics2&sourcetype=json"
+  token: "eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eJwVy0sOgyAQANC7zBoaPjPUsvIqjEBCY9GqNE2Mdy_dv3dC-q7gtSOHD2UUCXgeBTw4ooBkkiTFWqKdouQhosRkORmKOdsMAirn_8b7QH1rAXvjvtdQ47KF8V1qabdpeXX6KdvRwgw-h3lP1w_XdyNd.13uwdKHaXXduQi2FhuHnb-FZxtOBKsqCG_bPbDDA4wzFHPxaYsFfoTI7Q5ZdP2RnKhdPAgtydFokG6DL4vxasA"
 
 
-
-
+MetricsAddr: "http://10.202.185.50:8080/metrics"
