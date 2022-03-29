@@ -1,5 +1,6 @@
 package kube_daemonSet
 
+// https://github.com/kubernetes/kube-state-metrics/blob/master/docs/daemonset-metrics.md
 import (
 	"encoding/json"
 	"fmt"

@@ -1,5 +1,7 @@
 package kube_ingress
 
+// https://github.com/kubernetes/kube-state-metrics/blob/master/docs/ingress-metrics.md
+
 import (
 	"encoding/json"
 	"fmt"

@@ -1,5 +1,6 @@
 package kube_configmap
 
+// https://github.com/kubernetes/kube-state-metrics/blob/master/docs/configmap-metrics.md
 import (
 	"encoding/json"
 	"fmt"

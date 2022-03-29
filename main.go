@@ -9,6 +9,7 @@ import (
 	_ "k8s_metric/utils2/kube_ingress"
 	_ "k8s_metric/utils2/kube_node"
 	_ "k8s_metric/utils2/kube_pod"
+	_ "k8s_metric/utils2/kube_service"
 	"net/http"
 	"strings"
 	"time"

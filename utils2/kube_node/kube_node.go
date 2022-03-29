@@ -1,5 +1,6 @@
 package kube_node
 
+// https://github.com/kubernetes/kube-state-metrics/blob/master/docs/node-metrics.md
 import (
 	"encoding/json"
 	"fmt"
