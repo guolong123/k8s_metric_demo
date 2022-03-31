@@ -20,13 +20,15 @@ type IngressMetrics struct {
 }
 
 type Ingress struct {
-	Namespace                      string
-	IngressName                    string
-	IngressLabels                  []string
-	IngressCreated                 float64
-	IngressMetadataResourceVersion float64
-	IngressPath                    map[string]string
-	IngressTls                     map[string]string
+	Timestamp                      int64             `json:"timestamp"`
+	Type                           string            `json:"type"`
+	Namespace                      string            `json:"namespace"`
+	Ingress                        string            `json:"ingress"`
+	IngressLabels                  []string          `json:"labels"`
+	IngressCreated                 float64           `json:"created"`
+	IngressMetadataResourceVersion float64           `json:"metadata-resource-version"`
+	IngressPath                    map[string]string `json:"path"`
+	IngressTls                     map[string]string `json:"tls"`
 }
 
 func (m *IngressMetrics) Group() {
@@ -45,7 +47,7 @@ func (m *IngressMetrics) Group() {
 		groupFields := strings.Join(groupFieldList, "_")
 		_, ok := m.Ingresses[groupFields]
 		if !ok {
-			m.Ingresses[groupFields] = Ingress{Namespace: groupFieldList[0], IngressName: groupFieldList[1]}
+			m.Ingresses[groupFields] = Ingress{Timestamp: utils2.Timestamp, Type: "ingress", Namespace: groupFieldList[0], Ingress: groupFieldList[1]}
 		}
 		m.GetTime(line, groupFields)
 		m.GetIngressPath(line, groupFields)

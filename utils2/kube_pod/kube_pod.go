@@ -20,22 +20,24 @@ type PodMetric struct {
 }
 
 type Pod struct {
-	Namespace               string                      `json:"Namespace"`
-	Pod                     string                      `json:"PodName"`
-	KubePodInfo             PodInfo                     `json:"PodInfo"`
-	KubePodCreated          float64                     `json:"PodCreated"`
-	KubePodStartTime        float64                     `json:"PodStartTime"`
-	KubePodCompletionTime   float64                     `json:"PodCompletionTime"`
-	KubePodRestartPolicy    string                      `json:"PodRestartPolicy"`
-	KubePodOwner            PodOwner                    `json:"PodOwner"`
-	KubePodLabels           []string                    `json:"PodLabels"`
-	KubePodStatusPhase      string                      `json:"PodStatusPhase"`
-	KubePodStatusReady      string                      `json:"PodStatusReady"`
-	KubePodStatusScheduled  string                      `json:"PodStatusScheduled"`
+	Timestamp               int64                       `json:"timestamp"`
+	Type                    string                      `json:"type"`
+	Namespace               string                      `json:"namespace"`
+	Pod                     string                      `json:"pod"`
+	KubePodInfo             PodInfo                     `json:"info"`
+	KubePodCreated          float64                     `json:"created"`
+	KubePodStartTime        float64                     `json:"start_time"`
+	KubePodCompletionTime   float64                     `json:"completion_time"`
+	KubePodRestartPolicy    string                      `json:"restart_policy"`
+	KubePodOwner            PodOwner                    `json:"owner"`
+	KubePodLabels           []string                    `json:"labels"`
+	KubePodStatusPhase      string                      `json:"status_phase"`
+	KubePodStatusReady      string                      `json:"status_ready"`
+	KubePodStatusScheduled  string                      `json:"status_scheduled"`
 	KubePodContainerMap     map[string]PodContainer     `json:"-"`
 	KubePodInitContainerMap map[string]PodInitContainer `json:"-"`
-	KubePodContainers       []PodContainer              `json:"PodContainers"`
-	KubePodInitContainers   []PodInitContainer          `json:"PodInitContainers"`
+	KubePodContainers       []PodContainer              `json:"containers"`
+	KubePodInitContainers   []PodInitContainer          `json:"init_containers"`
 }
 
 type PodInfo struct {
@@ -70,7 +72,7 @@ func (m *PodMetric) Group() {
 		groupFields := strings.Join(groupFieldList, "_")
 		_, ok := m.Pods[groupFields]
 		if !ok {
-			m.Pods[groupFields] = Pod{Namespace: groupFieldList[0], Pod: groupFieldList[1]}
+			m.Pods[groupFields] = Pod{Timestamp: utils2.Timestamp, Type: "pod", Namespace: groupFieldList[0], Pod: groupFieldList[1]}
 		}
 
 		m.GetPodInfo(line, groupFields)

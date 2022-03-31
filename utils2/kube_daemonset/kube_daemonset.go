@@ -19,17 +19,19 @@ type DaemonSetMetrics struct {
 }
 
 type DaemonSet struct {
-	Namespace                          string
-	DaemonSetName                      string
-	DaemonSetCreated                   float64
-	DaemonSetStatusCurrentNumber       int
-	DaemonSetStatusDesiredNumber       int
-	DaemonSetStatusNumberAvailable     int
-	DaemonSetStatusNumberMissScheduled int
-	DaemonSetStatusNumberReady         int
-	DaemonSetStatusNumberUnavailable   int
-	DaemonSetMetadataGeneration        int
-	DaemonSetLabels                    []string
+	Timestamp                          int64    `json:"timestamp"`
+	Type                               string   `json:"type"`
+	Namespace                          string   `json:"namespace"`
+	DaemonSet                          string   `json:"daemonset"`
+	DaemonSetCreated                   float64  `json:"created"`
+	DaemonSetStatusCurrentNumber       int      `json:"status_current_number"`
+	DaemonSetStatusDesiredNumber       int      `json:"status_desired_number"`
+	DaemonSetStatusNumberAvailable     int      `json:"status_number_available"`
+	DaemonSetStatusNumberMissScheduled int      `json:"status_number_miss_scheduled"`
+	DaemonSetStatusNumberReady         int      `json:"status_number_ready"`
+	DaemonSetStatusNumberUnavailable   int      `json:"status_number_unavailable"`
+	DaemonSetMetadataGeneration        int      `json:"metadata_generation"`
+	DaemonSetLabels                    []string `json:"labels"`
 }
 
 func (m *DaemonSetMetrics) Group() {
@@ -48,7 +50,7 @@ func (m *DaemonSetMetrics) Group() {
 		groupFields := strings.Join(groupFieldList, "_")
 		_, ok := m.DaemonSets[groupFields]
 		if !ok {
-			m.DaemonSets[groupFields] = DaemonSet{Namespace: groupFieldList[0], DaemonSetName: groupFieldList[1]}
+			m.DaemonSets[groupFields] = DaemonSet{Timestamp: utils2.Timestamp, Type: "daemonset", Namespace: groupFieldList[0], DaemonSet: groupFieldList[1]}
 		}
 		m.GetDaemonSetCreated(line, groupFields)
 		m.GetValue(line, groupFields)

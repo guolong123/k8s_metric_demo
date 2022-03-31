@@ -19,16 +19,18 @@ type NodeMetrics struct {
 }
 
 type Node struct {
-	NodeName              string
-	NodeInfo              map[string]string // Information about a cluster node
-	NodeLabels            []string          // Kubernetes labels converted to Prometheus labels
-	NodeRole              string            // The role of a cluster node
-	NodeSpecUnschedulable bool              // Whether a node can schedule new pods
-	NodeSpecTaint         map[string]string // The taint of a cluster node
-	NodeStatusCapacity    map[string]string // The capacity for different resources of a node
-	NodeStatusAllocatable map[string]string // The allocatable for different resources of a node that are available for scheduling.
-	NodeStatusCondition   map[string]string // The condition of a cluster node
-	NodeCreated           float64           // Unix creation timestamp
+	Timestamp             int64             `json:"timestamp"`
+	Type                  string            `json:"type"`
+	Node                  string            `json:"node"`
+	NodeInfo              map[string]string `json:"info"`               // Information about a cluster node
+	NodeLabels            []string          `json:"labels"`             // Kubernetes labels converted to Prometheus labels
+	NodeRole              string            `json:"role"`               // The role of a cluster node
+	NodeSpecUnschedulable bool              `json:"spec_unschedulable"` // Whether a node can schedule new pods
+	NodeSpecTaint         map[string]string `json:"spec_taint"`         // The taint of a cluster node
+	NodeStatusCapacity    map[string]string `json:"status_capacity"`    // The capacity for different resources of a node
+	NodeStatusAllocatable map[string]string `json:"status_allocatable"` // The allocatable for different resources of a node that are available for scheduling.
+	NodeStatusCondition   map[string]string `json:"status_condition"`   // The condition of a cluster node
+	NodeCreated           float64           `json:"created"`            // Unix creation timestamp
 }
 
 func (m *NodeMetrics) Group() {
@@ -47,7 +49,7 @@ func (m *NodeMetrics) Group() {
 		groupFields := strings.Join(groupFieldList, "_")
 		_, ok := m.Nodes[groupFields]
 		if !ok {
-			m.Nodes[groupFields] = Node{NodeName: groupFieldList[0]}
+			m.Nodes[groupFields] = Node{Timestamp: utils2.Timestamp, Type: "node", Node: groupFieldList[0]}
 		}
 		m.GetNodeInfo(line, groupFields)
 		m.GetNodeLabels(line, groupFields)

@@ -7,7 +7,7 @@ import (
 )
 
 type PodInitContainer struct {
-	Container                                      string            `json:"name"`
+	Container                                      string            `json:"init_container"`
 	KubePodInitContainerInfo                       map[string]string `json:"info"`
 	KubePodInitContainerStatusWaiting              bool              `json:"status_waiting"`
 	KubePodInitContainerStatusWaitingReason        string            `json:"status_waiting_reason" `

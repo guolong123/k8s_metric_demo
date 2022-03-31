@@ -20,13 +20,15 @@ type ServiceMetrics struct {
 }
 
 type Service struct {
-	Namespace             string
-	ServiceName           string
-	ServiceInfo           map[string]string // Information about service
-	ServiceLabels         []string          //  Kubernetes labels converted to Prometheus labels
-	ServiceCreated        float64           // Unix creation timestamp
-	ServiceSpecType       string            // Type about service
-	ServiceSpecExternalIp string            // Service external ips. One series for each ip
+	Timestamp             int64             `json:"timestamp"`
+	Type                  string            `json:"type"`
+	Namespace             string            `json:"namespace"`
+	ServiceName           string            `json:"service"`
+	ServiceInfo           map[string]string `json:"info"`             // Information about service
+	ServiceLabels         []string          `json:"labels"`           //  Kubernetes labels converted to Prometheus labels
+	ServiceCreated        float64           `json:"created"`          // Unix creation timestamp
+	ServiceSpecType       string            `json:"spec_type"`        // Type about service
+	ServiceSpecExternalIp string            `json:"spec_external_ip"` // Service external ips. One series for each ip
 }
 
 func (m *ServiceMetrics) Group() {
@@ -45,7 +47,7 @@ func (m *ServiceMetrics) Group() {
 		groupFields := strings.Join(groupFieldList, "_")
 		_, ok := m.Services[groupFields]
 		if !ok {
-			m.Services[groupFields] = Service{Namespace: groupFieldList[0], ServiceName: groupFieldList[1]}
+			m.Services[groupFields] = Service{Timestamp: utils2.Timestamp, Type: "service", Namespace: groupFieldList[0], ServiceName: groupFieldList[1]}
 		}
 		m.GetServiceInfo(line, groupFields)
 		m.GetServiceLabels(line, groupFields)

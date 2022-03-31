@@ -7,7 +7,10 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 )
+
+var Timestamp = time.Now().UnixMilli()
 
 type Metric interface {
 	Group()

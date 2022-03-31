@@ -7,6 +7,7 @@ import (
 	_ "k8s_metric/utils2/kube_configmap"
 	_ "k8s_metric/utils2/kube_daemonset"
 	_ "k8s_metric/utils2/kube_ingress"
+	_ "k8s_metric/utils2/kube_namespace"
 	_ "k8s_metric/utils2/kube_node"
 	_ "k8s_metric/utils2/kube_pod"
 	_ "k8s_metric/utils2/kube_service"
@@ -37,7 +38,7 @@ func uploadToPandora(jsonData string) {
 	token := "eyJhbGciOiJIUzUxMiIsInppcCI6IkRFRiJ9.eJwVy0sOgyAQANC7zBoaPjPUsvIqjEBCY9GqNE2Mdy_dv3dC-q7gtSOHD2UUCXgeBTw4ooBkkiTFWqKdouQhosRkORmKOdsMAirn_8b7QH1rAXvjvtdQ47KF8V1qabdpeXX6KdvRwgw-h3lP1w_XdyNd.13uwdKHaXXduQi2FhuHnb-FZxtOBKsqCG_bPbDDA4wzFHPxaYsFfoTI7Q5ZdP2RnKhdPAgtydFokG6DL4vxasA"
 	client := &http.Client{}
 
-	req, err := http.NewRequest("POST", "http://pandora-web-svc.pandora-jks-guolong.qa.qiniu.io/api/v1/data?repo=k8s_metrics2&sourcetype=json", strings.NewReader(jsonData))
+	req, err := http.NewRequest("POST", "http://pandora-web-svc.pandora-jks-guolong.qa.qiniu.io/api/v1/data?repo=k8s_metrics&sourcetype=json", strings.NewReader(jsonData))
 	req.Header.Set("Authorization", token)
 	req.Header.Set("Content-Type", "application/json")
 

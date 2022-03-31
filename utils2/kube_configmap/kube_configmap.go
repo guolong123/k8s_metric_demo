@@ -19,10 +19,12 @@ type ConfigMapMetrics struct {
 }
 
 type ConfigMap struct {
-	Namespace                        string
-	ConfigMapName                    string
-	ConfigMapCreated                 float64
-	ConfigMapMetaDataResourceVersion float64
+	Timestamp                        int64   `json:"timestamp"`
+	Type                             string  `json:"type"`
+	Namespace                        string  `json:"namespace"`
+	ConfigMapName                    string  `json:"configmap"`
+	ConfigMapCreated                 float64 `json:"created"`
+	ConfigMapMetaDataResourceVersion float64 `json:"meta_data_resource_version"`
 }
 
 func (m *ConfigMapMetrics) Group() {
@@ -41,7 +43,7 @@ func (m *ConfigMapMetrics) Group() {
 		groupFields := strings.Join(groupFieldList, "_")
 		_, ok := m.ConfigMaps[groupFields]
 		if !ok {
-			m.ConfigMaps[groupFields] = ConfigMap{Namespace: groupFieldList[0], ConfigMapName: groupFieldList[1]}
+			m.ConfigMaps[groupFields] = ConfigMap{Timestamp: utils2.Timestamp, Type: "configmap", Namespace: groupFieldList[0], ConfigMapName: groupFieldList[1]}
 		}
 		m.GetCreated(line, groupFields)
 	}
